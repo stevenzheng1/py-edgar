@@ -1,5 +1,6 @@
 from lxml import html
 import requests
+import pandas as pd
 
 class Company():
 
@@ -67,6 +68,28 @@ def getDocuments(tree, noOfDocuments=1):
     if len(result) == 1:
         return result[0]
     return result
+
+def getDocuments2(tree, noOfDocuments=1):
+    baseurl = "https://www.sec.gov"
+    elems = tree.xpath('//*[@id="documentsbutton"]')[:noOfDocuments]
+    result = []
+    list_url = []
+    
+    for elem in elems:
+        url = baseurl + elem.attrib["href"]
+        contentPage = getRequest(url)
+        url = baseurl + contentPage.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
+        filing = getRequest(url)
+        result.append(filing.body.text_content())
+        list_url.append(url)
+        
+    result2 = pd.DataFrame(result,columns=['body'])
+    result2['url'] = list_url
+
+    if len(result) == 1:
+        return result[0]
+    
+    return result2
 
 def getCIKFromCompany(companyName):
     tree = getRequest("https://www.sec.gov/cgi-bin/browse-edgar?company=" + companyName)
