@@ -86,8 +86,8 @@ def getDocuments2(tree, noOfDocuments=1):
     result2 = pd.DataFrame(result,columns=['body'])
     result2['url'] = list_url
 
-    if len(result) == 1:
-        return result[0]
+    #if len(result) == 1:
+    #    return result[0]
     
     return result2
 
